@@ -155,6 +155,9 @@ LevelCreator.prototype = {
      *      'wall_lr', 'wall_td'
      * height:
      *      int from 1 to 30ish (gets weird after?)
+     *      
+     *      //TODO - Make all the functions actually functional, dont hide 
+     *      //that theyre changing the grid, make them return a new one.
      * */
     
     genLevel: function () {
