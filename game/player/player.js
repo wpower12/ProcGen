@@ -26,6 +26,7 @@ function Player(game, level) {
 }
 Player.prototype = {
     reset: function (level) {
+        this.l = level;
         this.sprite.kill();
         this.addSprite(level);
     },

@@ -68,7 +68,7 @@ LevelCreator.prototype = {
             for (var y = 0; y < this.size.l; y++) {
                 this.grid[x][y] = {
                     type: this.terrain,
-                    height: this.getPerlinHeight(x + offsetx, y + offsety),
+                    height: this.getPerlinHeight(x + offsetx, y + offsety)+1,
                     top: ""
                 };
             }

@@ -72,6 +72,9 @@ Play.prototype = {
         
         this.player.reset( this.levelGrid );
         this.game.camera.follow( this.player.sprite );
+        this.fullgroup = this.levelGroup;
+        this.fullgroup.add( this.player.sprite );
+        this.game.iso.simpleSort(this.fullgroup);
     },
     loadLocal: function(){
         this.loadThings( '' );
