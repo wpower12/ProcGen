@@ -1,6 +1,6 @@
-/* 
+/*
  * Makes a level - For now a level is just an array of cells that carry info
- *    
+ *
  */
 function LevelCreator() {
     var Noise = require('../plugins/perlin');
@@ -14,39 +14,39 @@ function LevelCreator() {
 }
 LevelCreator.prototype = {
     /**
-     * genLevel 
-     * 
-     * This is the main callback that is ran to return a grid 
-     * representation of a levels terrain. 
-     * 
-     * There are a collection of functions available to operate on the grid, 
+     * genLevel
+     *
+     * This is the main callback that is ran to return a grid
+     * representation of a levels terrain.
+     *
+     * There are a collection of functions available to operate on the grid,
      * and you can compose these with your own to generate new types of
      * terrain.
-     * 
+     *
      * This is the function where you should chain procedures together
      * to create your final product.
-     * 
+     *
      * The this object holds a reference to the grid at all times.  This is the
      * grid you should read and write to to make changes to the actual
      * terrain.
-     * 
+     *
      * this.grid[x][y] = {
      *                  type: <String> tilename,
      *                  height: <int> tileheight,
      *                  top: <String> toptilename
      *          };
-     *           
+     *
      * tilename:
      *       'grass','dirt'
      * toptilename:
      *      'wall_lr', 'wall_td'
      * height:
      *      int from 1 to 30ish (gets weird after?)
-     *      
-     *      //TODO - Make all the functions actually functional, dont hide 
+     *
+     *      //TODO - Make all the functions actually functional, dont hide
      *      //that theyre changing the grid, make them return a new one.
      * */
-    
+
     genLevel: function () {
         //Add a smooth base of the default texture (dirt)
         this.getSmooth();
@@ -54,9 +54,7 @@ LevelCreator.prototype = {
         //Add some patches of grass
         this.addPatches();
 
-        //Add some towns
-        var townCount = Math.floor(Math.random() * 5) + 1;
-        this.addTowns(townCount);
+        this.water_table( 2 );
 
         return this.grid;
     },
@@ -92,6 +90,19 @@ LevelCreator.prototype = {
                 x: this.randInt(0, this.size.w),
                 y: this.randInt(0, this.size.l)
             };
+        }
+    },
+    water_table: function( h ){
+        var x = this.grid.length;
+        var y = this.grid[0].length;
+        var i, j, cell;
+        for( i = 0; i < x; i++ ){
+          for( j = 0; j < y; j++ ){
+            cell = this.grid[i][j];
+            if( cell.height < h ){
+                cell.type = 'water';
+            }
+          }
         }
     },
     addTowns: function (count) {

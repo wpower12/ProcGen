@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/* 
+/*
  * Encounter - An encounter defines a level and enemy units for a battle
  *           - Object that stores units, level sprites
  *           - holds collections of above? extend sprite class to include
@@ -18,31 +18,37 @@ function Encounter(l, e) {
 }
 Encounter.prototype = {
     getLevelGroup: function (game) {
-        //Returns the group of level tile sprites that were added to the game.  
-        var sprite, type, cell;
+        //Returns the group of level tile sprites that were added to the game.
+        var sprite, type, cell, delay;
+        this.water = [];
+        var A = 10;
         this.tiles = game.add.group();
         for (var x = 0; x < this.size.width; x++) {
             for (var y = 0; y < this.size.length; y++) {
                 cell = this.level[x][y];
-                sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, 0, cell.type, 0, this.tiles);
-                sprite.anchor.set(0.5, 0);
-                for (var h = 1; h < cell.height; h++) {
-                    sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, h * this.tile.isoheight, cell.type, 0, this.tiles);
-                    sprite.anchor.set(0.5, 0);
-                }
-                
-                //Add top if there is one
-                if( !(cell.top === "") ){
-                    sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, (cell.height+1) * this.tile.isoheight, cell.top, 0, this.tiles);
-                    sprite.anchor.set(0.5, 0);
+                if( cell.type == 'water' ){
+                  sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, (cell.height * this.tile.isoheight)-5, cell.type, 0, this.tiles);
+                  sprite.anchor.set(0.5, 0);
+                  this.water.push(sprite);
+                } else{
+                  for (var h = 0; h < cell.height; h++) {
+                      sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, h * this.tile.isoheight, cell.type, 0, this.tiles);
+                      sprite.anchor.set(0.5, 0);
+                  }
+
+                  //Add top if there is one
+                  if( !(cell.top === "") ){
+                      sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, (cell.height+1) * this.tile.isoheight, cell.top, 0, this.tiles);
+                      sprite.anchor.set(0.5, 0);
+                  }
                 }
             }
         }
-        
+
         return this.tiles;
     },
     getUnitGroup: function () {
-        
+
     },
     getLevelGrid: function(){
         //Returns the grid representation of the level that can be used for other stuff
@@ -111,9 +117,9 @@ EncounterCreator.prototype = {
 };
 module.exports = EncounterCreator;
 },{"../generation/encounter":1,"../generation/levelcreator":3}],3:[function(require,module,exports){
-/* 
+/*
  * Makes a level - For now a level is just an array of cells that carry info
- *    
+ *
  */
 function LevelCreator() {
     var Noise = require('../plugins/perlin');
@@ -127,39 +133,39 @@ function LevelCreator() {
 }
 LevelCreator.prototype = {
     /**
-     * genLevel 
-     * 
-     * This is the main callback that is ran to return a grid 
-     * representation of a levels terrain. 
-     * 
-     * There are a collection of functions available to operate on the grid, 
+     * genLevel
+     *
+     * This is the main callback that is ran to return a grid
+     * representation of a levels terrain.
+     *
+     * There are a collection of functions available to operate on the grid,
      * and you can compose these with your own to generate new types of
      * terrain.
-     * 
+     *
      * This is the function where you should chain procedures together
      * to create your final product.
-     * 
+     *
      * The this object holds a reference to the grid at all times.  This is the
      * grid you should read and write to to make changes to the actual
      * terrain.
-     * 
+     *
      * this.grid[x][y] = {
      *                  type: <String> tilename,
      *                  height: <int> tileheight,
      *                  top: <String> toptilename
      *          };
-     *           
+     *
      * tilename:
      *       'grass','dirt'
      * toptilename:
      *      'wall_lr', 'wall_td'
      * height:
      *      int from 1 to 30ish (gets weird after?)
-     *      
-     *      //TODO - Make all the functions actually functional, dont hide 
+     *
+     *      //TODO - Make all the functions actually functional, dont hide
      *      //that theyre changing the grid, make them return a new one.
      * */
-    
+
     genLevel: function () {
         //Add a smooth base of the default texture (dirt)
         this.getSmooth();
@@ -167,9 +173,7 @@ LevelCreator.prototype = {
         //Add some patches of grass
         this.addPatches();
 
-        //Add some towns
-        var townCount = Math.floor(Math.random() * 5) + 1;
-        this.addTowns(townCount);
+        this.water_table( 2 );
 
         return this.grid;
     },
@@ -181,7 +185,7 @@ LevelCreator.prototype = {
             for (var y = 0; y < this.size.l; y++) {
                 this.grid[x][y] = {
                     type: this.terrain,
-                    height: this.getPerlinHeight(x + offsetx, y + offsety),
+                    height: this.getPerlinHeight(x + offsetx, y + offsety)+1,
                     top: ""
                 };
             }
@@ -205,6 +209,19 @@ LevelCreator.prototype = {
                 x: this.randInt(0, this.size.w),
                 y: this.randInt(0, this.size.l)
             };
+        }
+    },
+    water_table: function( h ){
+        var x = this.grid.length;
+        var y = this.grid[0].length;
+        var i, j, cell;
+        for( i = 0; i < x; i++ ){
+          for( j = 0; j < y; j++ ){
+            cell = this.grid[i][j];
+            if( cell.height < h ){
+                cell.type = 'water';
+            }
+          }
         }
     },
     addTowns: function (count) {
@@ -384,6 +401,7 @@ function Player(game, level) {
 }
 Player.prototype = {
     reset: function (level) {
+        this.l = level;
         this.sprite.kill();
         this.addSprite(level);
     },
@@ -895,7 +913,7 @@ Play.prototype = {
     preload: function () {
         this.loadLocal();
         //this.loadWP();
-        
+
         this.game.time.advancedTiming = true;
         this.game.plugins.add(new Phaser.Plugin.Isometric(this.game));
         this.game.iso.anchor.setTo(0.5, 0.2);
@@ -906,57 +924,67 @@ Play.prototype = {
 
         // Provide a 3D position for the cursor
         this.cursorPos = new Phaser.Plugin.Isometric.Point3();
-        
+
         //Level Stuff
         this.encountercreator = new EncounterCreator();
         this.encountercreator.configuration.size = 'large';
         this.encounter = this.encountercreator.getEncounter();
-        
-        this.levelGroup = this.encounter.getLevelGroup( this.game );       
+
+        this.levelGroup = this.encounter.getLevelGroup( this.game );
         this.levelGrid = this.encounter.getLevelGrid();
-        
-        
+
+
         //Unit Stuff
         this.player = new Player( this.game, this.levelGrid );
 
         //Input stuff
         this.game.input.onDown.add( this.clickListener, this );
-        
+
         //Camera Follow Player
-        
+
         var bounds = {
             x: 40*38*2*1.2,
             y: 55*38*2*1.2
         };
-        
+
         this.game.world.setBounds(0, 0, bounds.x, bounds.y);
         //this.game.physics.startSystem(Phaser.Physics.P2JS);
         //this.game.physics.p2.enable(this.player.sprite);
         this.game.camera.follow( this.player.sprite );
-        
-        
+
+
         //Make a combination group for ordering
         this.fullgroup = this.levelGroup;
         this.fullgroup.add( this.player.sprite );
         this.game.iso.simpleSort(this.fullgroup);
+        this.waterheight = this.encounter.water[0].isoZ;
     },
     update: function () {
         if( this.player.update() ){
             this.game.iso.simpleSort( this.fullgroup );
         }
+        this.encounter.water.forEach(function (w) {
+            w.isoZ = (-2 * Math.sin((this.game.time.now + (w.isoX * 7)) * 0.004)) + (-1 * Math.sin((this.game.time.now + (w.isoY * 8)) * 0.005))+this.waterheight;
+            w.alpha = Phaser.Math.clamp(1 + (w.isoZ * 0.1), 0.2, 1);
+        }.bind(this));
+
     },
     clickListener: function () {
         //this.game.state.start('play');
         console.log('OMG CLICK');
         this.levelGroup.removeAll();
-        
-        
+
+
         this.encounter = this.encountercreator.getEncounter();
         this.levelGroup = this.encounter.getLevelGroup( this.game );
         this.levelGrid = this.encounter.getLevelGrid();
-        
+
         this.player.reset( this.levelGrid );
         this.game.camera.follow( this.player.sprite );
+        this.fullgroup = this.levelGroup;
+        this.fullgroup.add( this.player.sprite );
+        this.game.iso.simpleSort(this.fullgroup);
+        this.waterheight = this.encounter.water[0].isoZ;
     },
     loadLocal: function(){
         this.loadThings( '' );
@@ -969,26 +997,28 @@ Play.prototype = {
         this.game.load.image('bigsky', base+'assets/largesky.png');
         this.game.load.image('grass', base+'assets/tile.png');
         this.game.load.image('dirt', base+'assets/dirt.png');
-        
+        this.game.load.image('water', base+'assets/water.png')
+
         this.game.load.image('towerbase', base+'assets/towerbase.png');
         this.game.load.image('towertop', base+'assets/towertop.png');
-        
+
         this.game.load.image('wall_ud', base+'assets/wall_updown.png');
         this.game.load.image('wall_lr', base+'assets/wall_leftright.png');
 //        this.game.load.image('grass', base+'assets/wall_updown.png');
 //        this.game.load.image('dirt', base+'assets/wall_leftright.png');
-        
+
         this.game.load.spritesheet( 'player_ne', base+'assets/knight_ne.png', 64, 64 );
         this.game.load.spritesheet( 'player_nw', base+'assets/knight_nw.png', 64, 64 );
         this.game.load.spritesheet( 'player_se', base+'assets/knight_se.png', 64, 64 );
         this.game.load.spritesheet( 'player_sw', base+'assets/knight_sw.png', 64, 64 );
-        
+
         //this.game.load.atlas( 'knight', base+'assets/knightwalking.png', base+'assets/knightwalking.json' );
         this.game.load.spritesheet( 'knight', base+'assets/knightwalking.png', 64, 64 );
     }
 };
 
 module.exports = Play;
+
 },{"../generation/encountercreator":2,"../player/player":5}],11:[function(require,module,exports){
 
 'use strict';
