@@ -6,11 +6,6 @@ function LevelCreator() {
     var Noise = require('../plugins/perlin');
     this.noise = new Noise();
     this.grid = [];
-
-    //'Public' properties (ew) for configuration - defaults
-    this.setSize({x: 12, y: 12});
-    this.terrain = 'dirt';
-    this.doodads = 'fantasy';
 }
 LevelCreator.prototype = {
     /**

@@ -1,17 +1,14 @@
 /* 
  *  Player
  */
-function Player(game, level) {
+function Player(game) {
     this.loc = {x: 15, y: 15, z: 0};
     this.facing = 0;
     this.tile = {isowidth: 38,
         isoheight: 8};
     this.g = game;
-    this.l = level;
-
-    //Before we add the sprite, we need to figure out what level its at.
-    this.addSprite(level);
-
+    this.l  = [];
+    
     //Add controls
     this.inputopen = true;
     this.timer = 0;
@@ -27,7 +24,9 @@ function Player(game, level) {
 Player.prototype = {
     reset: function (level) {
         this.l = level;
-        this.sprite.kill();
+        if( this.sprite ){
+            this.sprite.kill();
+        }
         this.addSprite(level);
     },
     addSprite: function (level) {
