@@ -56,6 +56,8 @@ LevelCreator.prototype = {
 
         this.water_table( 2 );
 
+        this.addDoodads(  );
+
         return this.grid;
     },
     getSmooth: function ( ) {
@@ -104,6 +106,37 @@ LevelCreator.prototype = {
             }
           }
         }
+    },
+    addDoodads: function(){
+      var i, j, cell, t, p;
+      for( i = 0; i < this.size.w; i++ ){
+        for( j = 0; j < this.size.l; j++ ){
+          cell = this.grid[i][j];
+          if( cell.type !== 'water' ){
+            t = this.randInt( 0, 75 );
+            switch( t ){
+                case 0:
+                  p = 'trees_1';
+                  break;
+                case 1:
+                  p = 'trees_2';
+                  break;
+                case 2:
+                  p = 'trees_3';
+                  break;
+                case 4:
+                  p = 'rocks_1';
+                  break;
+                case 5:
+                  p = 'rocks_2';
+                  break;
+                default:
+                  p = '';
+            }
+            cell.top = p;
+          }
+        }
+      }
     },
     addTowns: function (count) {
         var towns = [];

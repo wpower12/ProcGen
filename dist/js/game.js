@@ -27,7 +27,7 @@ Encounter.prototype = {
             for (var y = 0; y < this.size.length; y++) {
                 cell = this.level[x][y];
                 if( cell.type == 'water' ){
-                  sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, (cell.height * this.tile.isoheight)-5, cell.type, 0, this.tiles);
+                  sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, ((cell.height-1)* this.tile.isoheight), cell.type, 0, this.tiles);
                   sprite.anchor.set(0.5, 0);
                   this.water.push(sprite);
                 } else{
@@ -40,6 +40,7 @@ Encounter.prototype = {
                   if( !(cell.top === "") ){
                       sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, (cell.height+1) * this.tile.isoheight, cell.top, 0, this.tiles);
                       sprite.anchor.set(0.5, 0);
+                      //sprite.anchor.set(0, 0);
                   }
                 }
             }
@@ -175,6 +176,8 @@ LevelCreator.prototype = {
 
         this.water_table( 2 );
 
+        this.addDoodads(  );
+
         return this.grid;
     },
     getSmooth: function ( ) {
@@ -223,6 +226,37 @@ LevelCreator.prototype = {
             }
           }
         }
+    },
+    addDoodads: function(){
+      var i, j, cell, t, p;
+      for( i = 0; i < this.size.w; i++ ){
+        for( j = 0; j < this.size.l; j++ ){
+          cell = this.grid[i][j];
+          if( cell.type !== 'water' ){
+            t = this.randInt( 0, 75 );
+            switch( t ){
+                case 0:
+                  p = 'trees_1';
+                  break;
+                case 1:
+                  p = 'trees_2';
+                  break;
+                case 2:
+                  p = 'trees_3';
+                  break;
+                case 4:
+                  p = 'rocks_1';
+                  break;
+                case 5:
+                  p = 'rocks_2';
+                  break;
+                default:
+                  p = '';
+            }
+            cell.top = p;
+          }
+        }
+      }
     },
     addTowns: function (count) {
         var towns = [];
@@ -1002,8 +1036,17 @@ Play.prototype = {
         this.game.load.image('towerbase', base+'assets/towerbase.png');
         this.game.load.image('towertop', base+'assets/towertop.png');
 
+
+        //Doodad Tiles.
         this.game.load.image('wall_ud', base+'assets/wall_updown.png');
         this.game.load.image('wall_lr', base+'assets/wall_leftright.png');
+
+        this.game.load.image('trees_1', base+'assets/trees_1.png');
+        this.game.load.image('trees_2', base+'assets/trees_2.png');
+        this.game.load.image('trees_3', base+'assets/trees_6.png');
+        this.game.load.image('rocks_1', base+'assets/rocks_4.png');
+        this.game.load.image('rocks_2', base+'assets/rocks_5.png');
+
 //        this.game.load.image('grass', base+'assets/wall_updown.png');
 //        this.game.load.image('dirt', base+'assets/wall_leftright.png');
 
