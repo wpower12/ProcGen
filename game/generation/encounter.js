@@ -26,7 +26,7 @@ Encounter.prototype = {
             for (var y = 0; y < this.size.length; y++) {
                 cell = this.level[x][y];
                 if( cell.type == 'water' ){
-                  sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, ((cell.height-1)* this.tile.isoheight), cell.type, 0, this.tiles);
+                  sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, ((cell.height)* this.tile.isoheight), cell.type, 0, this.tiles);
                   sprite.anchor.set(0.5, 0);
                   this.water.push(sprite);
                 } else{
@@ -37,7 +37,7 @@ Encounter.prototype = {
 
                   //Add top if there is one
                   if( !(cell.top === "") ){
-                      sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, (cell.height+1) * this.tile.isoheight, cell.top, 0, this.tiles);
+                      sprite = game.add.isoSprite(x * this.tile.isowidth, y * this.tile.isowidth, (cell.height) * this.tile.isoheight, cell.top, 0, this.tiles);
                       sprite.anchor.set(0.5, 0);
                       //sprite.anchor.set(0, 0);
                   }

@@ -46,7 +46,7 @@ EncounterCreator.prototype = {
                 ret = {x: 15, y: 15};
                 break;
             case 'large':
-                ret = {x: 40, y: 55};
+                ret = {x: 33, y: 33};
                 break;
             default:
                 ret = {x: 12, y: 12};

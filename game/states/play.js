@@ -25,7 +25,7 @@ Play.prototype = {
         //Level Stuff
         this.encountercreator = new EncounterCreator();
         this.encountercreator.configuration.size = 'large';
-        
+
         //Unit Stuff
         this.player = new Player(this.game);
 
@@ -62,21 +62,23 @@ Play.prototype = {
 
     },
     resetLevel: function () {
-        if(this.levelGroup){
+        if (this.levelGroup) {
             this.levelGroup.removeAll();
         }
         this.encounter = this.encountercreator.getEncounter();
         this.levelGroup = this.encounter.getLevelGroup(this.game);
         this.levelGrid = this.encounter.getLevelGrid();
         this.fullgroup = this.levelGroup;
-        
+
         this.player.reset(this.levelGrid);
         this.game.camera.follow(this.player.sprite);
-        
+
         this.fullgroup.add(this.player.sprite);
         this.game.iso.simpleSort(this.fullgroup);
-        
-        this.waterheight = this.encounter.water[0].isoZ;
+
+        if (this.encounter.water.length) {
+            this.waterheight = this.encounter.water[0].isoZ;
+        }
     },
     loadLocal: function () {
         this.loadThings('');
@@ -89,7 +91,8 @@ Play.prototype = {
         this.game.load.image('bigsky', base + 'assets/largesky.png');
         this.game.load.image('grass', base + 'assets/tile.png');
         this.game.load.image('dirt', base + 'assets/dirt.png');
-        this.game.load.image('water', base + 'assets/water.png')
+        this.game.load.image('stone', base + 'assets/stone.png');
+        this.game.load.image('water', base + 'assets/water.png');
 
         this.game.load.image('towerbase', base + 'assets/towerbase.png');
         this.game.load.image('towertop', base + 'assets/towertop.png');
